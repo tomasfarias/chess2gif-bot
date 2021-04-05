@@ -1,7 +1,7 @@
 ************
 chess2gif-bot
 ************
- A Discord bot to turn your chess games into GIFs! For now, it works with chess.com and lichess.org.
+A Discord bot to turn your chess games into GIFs! For now, it works with chess.com and lichess.org.
 
 Usage
 #####
@@ -25,5 +25,6 @@ Alternatively, you can mention the bot with any game ID:
    @Chess2GIF id:1111111111
 
 You can get any game ID from the game's URL:
-- `chess.com<https://www.chess.com>`_.: `https://www.chess.com/game/live/{ID}`
-- `lichess.org<https://www.lichess.org>`_.: `https://www.lichess.org/{ID}`
+
+- `chess.com <https://www.chess.com>`_: ``https://www.chess.com/game/live/{ID}``
+- `lichess.org <https://www.lichess.org>`_: ``https://www.lichess.org/{ID}``
