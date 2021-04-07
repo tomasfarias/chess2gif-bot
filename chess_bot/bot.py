@@ -12,9 +12,9 @@ import uuid
 import discord
 from discord.ext import commands
 
-PGN_HEADER_PATTERN = r'(?<={header}\s\")([a-zA-Z\s0-9\-\/\.]*)'
+PGN_HEADER_PATTERN = r'((?<={header}\s\")|(?<={header}\s))([a-zA-Z\s0-9\-\/\.]*)'
 
-class ChessGIF(commands.Cog):
+class Chess2GIF(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -114,9 +114,11 @@ def make_gif_embed(pgn: str, gif_file_path: Path) -> (discord.Embed, discord.Fil
     return embed, gif_file
 
 
-def get_game_dict(pgn: str, headers: list[str]):
+def get_game_dict(pgn: str, headers: list[str]) -> dict[str, str]:
     result = {}
     for header in headers:
+        print(PGN_HEADER_PATTERN.format(header=header))
+
         match = re.search(
             PGN_HEADER_PATTERN.format(header=header),
             pgn,
@@ -141,4 +143,4 @@ async def on_ready():
     await bot.change_presence(activity=discord.Activity(name="@Chess2GIF help", type=discord.ActivityType.listening))
 
 
-bot.add_cog(ChessGIF(bot))
+bot.add_cog(Chess2GIF(bot))
