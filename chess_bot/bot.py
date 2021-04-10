@@ -27,6 +27,10 @@ class Chess2GIF(commands.Cog):
         if message.author == self.bot.user:
             return
 
+        content = message.clean_content.strip().split(" ")
+        if len(content) >= 2 and content[1] == "help":  # Help messages handled by HelpCommand subclass
+            return
+
         if not self.bot.user.mentioned_in(message):
             return
 
