@@ -49,14 +49,16 @@ class Chess2GIF(commands.Cog):
 def process_message(message: discord.Message) -> tuple[str, str]:
     """Handle messages sent to bot"""
     logging.info("Processing message: %s", message)
-    content = message.clean_content.strip()
+    content = message.clean_content.strip().split(" ")[1:]
 
-    if content.startswith("@Chess2GIF id:"):
-        id_or_username = content.split(":")[1]
-        search_type = "id"
-    elif content.startswith("@Chess2GIF player:"):
-        id_or_username = content.split(":")[1]
-        search_type = "player"
+    for arg in content:
+        splitted = arg.split(":")
+        key = splitted[0]
+        value = splitted[1]
+
+        if key == "id" or key == "player":
+            search_type = key
+            id_or_username = value
 
     return id_or_username, search_type
 
@@ -64,7 +66,7 @@ def process_message(message: discord.Message) -> tuple[str, str]:
 def create_gif(
     id_or_username: str, search_type: str, output: Path = Path("chess.gif")
 ) -> tuple[Optional[str], Optional[str]]:
-    """Run cgf and c2g to create a chess GIF for the given game ID or player username"""
+    """Create a chess GIF for the given game ID or player username using c2g"""
     game_pgn, error = get_game_pgn(id_or_username, search_type)
     if error is not None or game_pgn is None:
         return None, error
@@ -78,6 +80,7 @@ def create_gif(
 
 
 def get_game_pgn(id_or_username: str, search_type: str) -> tuple[Optional[str], Optional[str]]:
+    """Runs cgf to get a PGN for a chess game"""
     if search_type == "id":
         proc = subprocess.run(["cgf", id_or_username, "--pgn"], capture_output=True)
     elif search_type == "player":
