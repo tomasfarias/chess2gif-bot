@@ -8,7 +8,6 @@ import logging
 from pathlib import Path
 import re
 import subprocess
-import tempfile
 from typing import Optional
 import uuid
 
