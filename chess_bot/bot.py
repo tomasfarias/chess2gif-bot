@@ -14,7 +14,7 @@ import uuid
 import discord
 from discord.ext import commands
 
-PGN_HEADER_PATTERN = r"((?<={header}\s\")|(?<={header}\s))([a-zA-Z\s0-9\-\/\.]*)"
+PGN_HEADER_PATTERN = r"((?<=\[{header}\s\")|(?<=\[{header}\s))([a-zA-Z\s0-9\-\/\.]+)"
 
 
 class Chess2GIF(commands.Cog):
@@ -115,10 +115,13 @@ def make_gif_embed(pgn: str, gif_file_path: Path) -> tuple[discord.Embed, discor
         black=game.get("Black", "Anonymous"),
         black_rating=game.get("BlackElo", "N/A"),
     )
+    logging.info("Creating embed: %s", title)
     embed = discord.Embed(title=title, color=discord.Color.green())
-
     for header in inline_headers:
-        embed.add_field(name=header, value=game[header], inline=True)
+        value = game.get(header)
+        logging.debug("Adding header: %s, %s", header, value)
+        if value is not None:
+            embed.add_field(name=header, value=game[header], inline=True)
 
     embed.set_image(url=f"attachment://{gif_file_path.name}")
 
@@ -126,12 +129,14 @@ def make_gif_embed(pgn: str, gif_file_path: Path) -> tuple[discord.Embed, discor
 
 
 def get_game_dict(pgn: str, headers: list[str]) -> dict[str, str]:
+    logging.debug("Processing PGN: %s", pgn)
     result = {}
-    for header in headers:
-        print(PGN_HEADER_PATTERN.format(header=header))
 
+    for header in headers:
+        logging.debug("Finding header: %s", PGN_HEADER_PATTERN.format(header=header))
         match = re.search(PGN_HEADER_PATTERN.format(header=header), pgn, flags=re.IGNORECASE)
         if match is not None:
+            logging.debug("Header found: %s", match)
             result[header] = match.group()
 
     return result
