@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import asyncio
-from pathlib import Path
-import logging
-import json
+from contextlib import contextmanager
 import functools
+import json
+import logging
+from pathlib import Path
 import re
 import subprocess
 import tempfile
@@ -24,30 +25,72 @@ class Chess2GIF(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         """Return the GIF of a chess game"""
-        if message.author == self.bot.user:
-            return
-
-        content = message.clean_content.strip().split(" ")
-        if len(content) >= 2 and content[1] == "help":  # Help messages handled by HelpCommand subclass
-            return
-
-        if not self.bot.user.mentioned_in(message):
+        check, error = is_valid_message(message, self.bot.user)
+        if check is False:
+            if error is not None:
+                # Communicate to the user if there is an error because, apparently,
+                # the message was not supposed to be ignored.
+                await self.handle_message_not_valid_error(message, error)
             return
 
         id_or_username, search_type = process_message(message)
         file_name = str(uuid.uuid4())
-        _, output_path = tempfile.mkstemp(suffix=".gif", prefix=f"{file_name}")
-        game_pgn, error = create_gif(id_or_username, search_type, Path(output_path))
-        if error is not None or game_pgn is None:
-            await self.handle_subprocess_error(message, error)
-            return
 
-        embed, gif_file = make_gif_embed(game_pgn, Path(output_path))
-        await message.channel.send(embed=embed, file=gif_file)
+        with tmp_file_path(f"{file_name}.gif") as output_path:
+            game_pgn, error = create_gif(id_or_username, search_type, output_path)
 
-    async def handle_subprocess_error(self, message: discord.Message, error):
+            if error is not None or game_pgn is None:
+                await self.handle_subprocess_error(message, error)
+                return
+
+            embed, gif_file = make_gif_embed(game_pgn, Path(output_path))
+            await message.channel.send(embed=embed, file=gif_file)
+
+    async def handle_message_not_valid_error(self, message: discord.Message, error: str):
+        """Handle errors related to potential wrongful invocations of the bot"""
+        logging.error("Not valid message: %s, failed with %s", message, error)
+        await message.channel.send(error)
+
+    async def handle_subprocess_error(self, message: discord.Message, error: Optional[str]):
+        """Handle errors related to c2g or cgf failing"""
         logging.error("Processing: %s, failed with %s", message, error)
-        await message.channel.send("I had trouble fetching your chess game")
+        await message.channel.send("I could not find your chess game")
+
+
+@contextmanager
+def tmp_file_path(name):
+    """Return a file path that will be deleted after it's used (if it's used)"""
+    path = Path(name)
+    try:
+        yield path
+    finally:
+        path.unlink(missing_ok=True)
+
+
+def is_valid_message(
+    message: discord.Message, bot_user: discord.ClientUser
+) -> tuple[Optional[bool], Optional[str]]:
+    """Check if the message is valid to be processed by the bot"""
+    if message.author == bot_user:
+        return False, None
+
+    if not bot_user.mentioned_in(message):
+        return False, None
+
+    content = message.clean_content.strip().split(" ")
+    if len(content) == 2 and content[1] == "help":
+        # Help messages handled by help command
+        return False, None
+
+    if not any(part.startswith("id:") or part.startswith("player:") for part in content):
+        # All calls to the bot should contain "id:" or "player:"
+        # so this is probably a user error
+        return (
+            False,
+            'Messages must contain "id" or "player", request help for more information: @Chess2GIF help',
+        )
+
+    return True, None
 
 
 def process_message(message: discord.Message) -> tuple[str, str]:
@@ -100,13 +143,14 @@ def get_game_pgn(id_or_username: str, search_type: str) -> tuple[Optional[str], 
 
 
 def make_gif_embed(pgn: str, gif_file_path: Path) -> tuple[discord.Embed, discord.File]:
+    """Create a discord.Embed with a Chess GIF File"""
     inline_headers = [
         "Date",
         "Result",
         "Termination",
     ]
     headers = ["White", "Black", "WhiteElo", "BlackElo"]
-    game = get_game_dict(pgn, headers + inline_headers)
+    game = extract_game_headers(pgn, headers + inline_headers)
     gif_file = discord.File(gif_file_path)
 
     title = "{white} ({white_rating}) ♔ vs {black} ({black_rating}) ♚".format(
@@ -128,7 +172,8 @@ def make_gif_embed(pgn: str, gif_file_path: Path) -> tuple[discord.Embed, discor
     return embed, gif_file
 
 
-def get_game_dict(pgn: str, headers: list[str]) -> dict[str, str]:
+def extract_game_headers(pgn: str, headers: list[str]) -> dict[str, str]:
+    """Extract headers from a PGN string"""
     logging.debug("Processing PGN: %s", pgn)
     result = {}
 

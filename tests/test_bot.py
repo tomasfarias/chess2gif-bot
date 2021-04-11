@@ -1,10 +1,19 @@
 from pathlib import Path
 import subprocess
 
+import discord
 from discord.ext import commands
 import pytest
 
-from chess_bot.bot import process_message, create_gif, make_gif_embed, get_game_dict, get_game_pgn
+from chess_bot.bot import (
+    process_message,
+    create_gif,
+    make_gif_embed,
+    extract_game_headers,
+    get_game_pgn,
+    is_valid_message,
+    tmp_file_path,
+)
 
 
 def command_not_available(command: str) -> bool:
@@ -105,9 +114,9 @@ def clean_str(s: str) -> str:
     return s.replace("\n", "").replace(" ", "").replace("'", "")
 
 
-def test_get_game_dict_with_pgn_1():
+def test_extract_game_headers_with_pgn_1():
     headers = ["Termination", "Result", "Date", "White", "Black", "WhiteElo", "BlackElo"]
-    game_dict = get_game_dict(SAMPLE_PGN_1, headers)
+    game_dict = extract_game_headers(SAMPLE_PGN_1, headers)
 
     assert [k for k in game_dict.keys()] == headers
     assert game_dict["Result"] == "1/2-1/2"
@@ -116,9 +125,9 @@ def test_get_game_dict_with_pgn_1():
     assert game_dict["Termination"] == "Game drawn by timeout vs insufficient material"
 
 
-def test_get_game_dict_with_pgn_2():
+def test_extract_game_headers_with_pgn_2():
     headers = ["Termination", "Result", "Date", "White", "Black", "WhiteElo", "BlackElo"]
-    game_dict = get_game_dict(SAMPLE_PGN_2, headers)
+    game_dict = extract_game_headers(SAMPLE_PGN_2, headers)
 
     assert [k for k in game_dict.keys()] == headers
     assert game_dict["Result"] == "0-1"
@@ -144,6 +153,9 @@ def test_make_gif_embed(tmp_path):
 class FakeMessage:
     def __init__(self, content):
         self.clean_content = content
+        self.author = None
+        self.mention_everyone = False
+        self.mentions = []
 
 
 def test_process_message_with_id():
@@ -158,3 +170,79 @@ def test_process_message_with_player_name():
     player, search_type = process_message(message)
     assert player == "hikaru"
     assert search_type == "player"
+
+
+USER_DATA = {
+    "username": "a-user",
+    "id": "0",
+    "discriminator": "#123",
+    "avatar": "N/A",
+}
+
+BOT_USER_DATA = {
+    "username": "@Chess2GIF",
+    "id": "1",
+    "discriminator": "#123",
+    "avatar": "N/A",
+    "bot": True,
+    "system": False,
+}
+
+
+def test_is_valid_message():
+    message = FakeMessage("@Chess2GIF player:hikaru")
+    user = discord.ClientUser(state={}, data=USER_DATA)
+    bot = discord.ClientUser(state={}, data=BOT_USER_DATA)
+    message.mentions = [bot]
+    message.author = user
+
+    check, error = is_valid_message(message, bot_user=bot)
+    assert check is True
+    error is None
+
+
+def test_is_not_valid_message_by_bot():
+    """If the bot wrote the message, we should ignore it"""
+    bot = discord.ClientUser(state={}, data=BOT_USER_DATA)
+    message = FakeMessage("@Chess2GIF player:hikaru")
+    message.mentions = [bot]
+    message.author = bot
+
+    check, error = is_valid_message(message, bot_user=bot)
+    assert check is False
+    error is None
+
+
+def test_is_not_valid_message_has_help():
+    message = FakeMessage("@Chess2GIF help")
+    user = discord.ClientUser(state={}, data=USER_DATA)
+    bot = discord.ClientUser(state={}, data=BOT_USER_DATA)
+    message.mentions = [bot]
+    message.author = user
+
+    check, error = is_valid_message(message, bot_user=bot)
+    assert check is False
+    error is not None
+
+
+def test_is_not_valid_message_malformed_message():
+    message = FakeMessage("@Chess2GIF malformed message")
+    user = discord.ClientUser(state={}, data=USER_DATA)
+    bot = discord.ClientUser(state={}, data=BOT_USER_DATA)
+    message.mentions = [bot]
+    message.author = user
+
+    check, error = is_valid_message(message, bot_user=bot)
+    assert check is False
+    error is not None
+
+
+def test_tmp_file_path():
+    a_file = "file.gif"
+    assert not Path(a_file).exists()
+    with tmp_file_path(a_file) as p:
+        assert Path(a_file) == p
+        assert not p.exists()
+        p.write_text("some text")
+        assert p.exists()
+    assert not Path(a_file).exists()
