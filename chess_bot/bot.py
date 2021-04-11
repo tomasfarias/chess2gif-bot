@@ -117,8 +117,14 @@ def create_gif(
     if error is not None or game_pgn is None:
         return None, error
 
+    game = extract_game_headers(game_pgn, ["Black"])
     logging.info("Saving game to: %s", output)
-    proc = subprocess.run(["c2g", game_pgn, "-o", str(output)], capture_output=True)
+    if game.get("Black", "") == id_or_username:
+        # Flip the board if the username is playing as black
+        proc = subprocess.run(["c2g", game_pgn, "-o", str(output), "--flip"], capture_output=True)
+    else:
+        proc = subprocess.run(["c2g", game_pgn, "-o", str(output)], capture_output=True)
+
     error = proc.stderr.decode("utf-8")
     if error != "":
         return None, error
