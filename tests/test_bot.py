@@ -37,7 +37,11 @@ def test_create_gif_with_player_name(tmp_path):
     p = d / "test.gif"
     assert not p.is_file()
 
-    _, error = create_gif("pepegasacrifice", "player", output=p)
+    args = {
+        "id_or_username": "pepegasacrifice",
+        "search_type": "player",
+    }
+    _, error = create_gif(args, output=p)
     assert error is None
     assert p.is_file()
 
@@ -51,7 +55,11 @@ def test_create_gif_with_game_id(tmp_path):
     p = d / "test.gif"
     assert not p.is_file()
 
-    _, error = create_gif("11219006649", "id", output=p)
+    args = {
+        "id_or_username": "11219006649",
+        "search_type": "id",
+    }
+    _, error = create_gif(args, output=p)
     assert error is None
     assert p.is_file()
 
@@ -71,7 +79,7 @@ SAMPLE_PGN_1 = """
 [EndTime 13:03:49 PDT]
 [Termination Game drawn by timeout vs insufficient material]
 
-1.e4 g6 2.d4 Bg7 3.Nf3 c6 4.Nc3 d5 5.h3 dxe4 6.Nxe4 Nf6 7.Nxf6+ exf6 8.Bc4 O-O 9.O-O Nd7 10.c3 b5 11.Bb3 Nb6 12.Re1 a5 13.a3 a4 14.Ba2 Re8 15.Bf4 Be6 16.Bxe6 Rxe6 17.Rxe6 fxe6 18.Qe2 Qd5 19.Re1 Re8 20.Nd2 Qd7 21.Ne4 Nd5 22.Bg3 Bf8 23.Qf3 Kg7 24.h4 h6 25.Re2 Qf7 26.Bd6 Be7 27.Bxe7 Rxe7 28.g3 g5 29.hxg5 hxg5 30.Nc5 f5 31.Re5 g4 32.Qe2 Kf6 33.Kg2 Qg8 34.Qd2 Qh8 35.Qe2 Qh3+ 36.Kg1 Rh7 37.Rxe6+ Kf7 38.Re7+ Kg6 39.Qe6+ Nf6 40.Rxh7 Qxh7 41.Nd3 Qg8 42.Ne5+ Kg5 43.Qxg8+ Nxg8 44.Nxc6 Nf6 45.Na7 Ne4 46.Nxb5 Nd2 47.d5 Kf6 48.d6 Nc4 49.d7 Ke7 50.Nd4 Nxb2 51.Nxf5+ Kxd7 52.Ne3 Ke6 53.Nxg4 Nc4 54.Ne3 Nxa3 55.f4 Nb1 56.Nc2 Kd5 57.Kf2 Ke4 58.Nb4 Nxc3 59.Ke1 Ke3 60.f5 Ne4 61.f6 Nc3 62.f7 Kd4 63.f8=Q Nb5 64.Qf4+ Kc3 65.Nc6 Nd4 66.Qxd4+ Kb3 67.Qxa4+ Kb2 68.Nd4 Kc3 69.Qb3+ Kxd4 70.Qc2 Kd5 1/2-1/2
+1. e4 {[%clk 0:30:00]} 1... g6 {[%clk 0:30:00]} 2. d4 {[%clk 0:29:51]} 2... Bg7 {[%clk 0:29:59]} 3. Nf3 {[%clk 0:29:40]} 3... c6 {[%clk 0:29:58]} 4. Nc3 {[%clk 0:29:31]} 4... d5 {[%clk 0:29:53]} 5. h3 {[%clk 0:29:27]} 5... dxe4 {[%clk 0:29:43]} 6. Nxe4 {[%clk 0:29:26]} 6... Nf6 {[%clk 0:29:40]} 7. Nxf6+ {[%clk 0:29:21]} 7... exf6 {[%clk 0:29:39]} 8. Bc4 {[%clk 0:29:13]} 8... O-O {[%clk 0:29:38]} 9. O-O {[%clk 0:29:09]} 9... Nd7 {[%clk 0:29:33]} 10. c3 {[%clk 0:29:00]} 10... b5 {[%clk 0:29:26]} 11. Bb3 {[%clk 0:28:53]} 11... Nb6 {[%clk 0:29:25]} 12. Re1 {[%clk 0:28:41]} 12... a5 {[%clk 0:29:21]} 13. a3 {[%clk 0:28:28]} 13... a4 {[%clk 0:29:15]} 14. Ba2 {[%clk 0:28:22]} 14... Re8 {[%clk 0:29:12]} 15. Bf4 {[%clk 0:27:25]} 15... Be6 {[%clk 0:29:02]} 16. Bxe6 {[%clk 0:25:30]} 16... Rxe6 {[%clk 0:29:01]} 17. Rxe6 {[%clk 0:25:12]} 17... fxe6 {[%clk 0:29:00]} 18. Qe2 {[%clk 0:25:07]} 18... Qd5 {[%clk 0:28:45]} 19. Re1 {[%clk 0:24:59]} 19... Re8 {[%clk 0:28:28]} 20. Nd2 {[%clk 0:23:31]} 20... Qd7 {[%clk 0:27:31]} 21. Ne4 {[%clk 0:23:17]} 21... Nd5 {[%clk 0:26:41]} 22. Bg3 {[%clk 0:21:15]} 22... Bf8 {[%clk 0:26:27]} 23. Qf3 {[%clk 0:20:50]} 23... Kg7 {[%clk 0:25:47]} 24. h4 {[%clk 0:20:03]} 24... h6 {[%clk 0:24:59]} 25. Re2 {[%clk 0:19:09]} 25... Qf7 {[%clk 0:24:28]} 26. Bd6 {[%clk 0:18:34]} 26... Be7 {[%clk 0:23:18]} 27. Bxe7 {[%clk 0:18:13]} 27... Rxe7 {[%clk 0:23:12]} 28. g3 {[%clk 0:17:14]} 28... g5 {[%clk 0:22:49]} 29. hxg5 {[%clk 0:16:16]} 29... hxg5 {[%clk 0:22:48]} 30. Nc5 {[%clk 0:15:28]} 30... f5 {[%clk 0:21:52]} 31. Re5 {[%clk 0:13:53]} 31... g4 {[%clk 0:21:05]} 32. Qe2 {[%clk 0:13:43]} 32... Kf6 {[%clk 0:20:59]} 33. Kg2 {[%clk 0:12:16]} 33... Qg8 {[%clk 0:20:11]} 34. Qd2 {[%clk 0:11:42]} 34... Qh8 {[%clk 0:19:06]} 35. Qe2 {[%clk 0:11:03]} 35... Qh3+ {[%clk 0:17:33]} 36. Kg1 {[%clk 0:10:52]} 36... Rh7 {[%clk 0:17:30]} 37. Rxe6+ {[%clk 0:10:26]} 37... Kf7 {[%clk 0:17:16]} 38. Re7+ {[%clk 0:06:13]} 38... Kg6 {[%clk 0:14:39]} 39. Qe6+ {[%clk 0:05:00]} 39... Nf6 {[%clk 0:14:34]} 40. Rxh7 {[%clk 0:04:31]} 40... Qxh7 {[%clk 0:14:33]} 41. Nd3 {[%clk 0:04:19]} 41... Qg8 {[%clk 0:12:28]} 42. Ne5+ {[%clk 0:04:03]} 42... Kg5 {[%clk 0:12:11]} 43. Qxg8+ {[%clk 0:03:51]} 43... Nxg8 {[%clk 0:12:02]} 44. Nxc6 {[%clk 0:03:50]} 44... Nf6 {[%clk 0:11:44]} 45. Na7 {[%clk 0:03:44]} 45... Ne4 {[%clk 0:11:31]} 46. Nxb5 {[%clk 0:03:36]} 46... Nd2 {[%clk 0:11:28]} 47. d5 {[%clk 0:03:26]} 47... Kf6 {[%clk 0:11:21]} 48. d6 {[%clk 0:02:50]} 48... Nc4 {[%clk 0:11:00]} 49. d7 {[%clk 0:02:33]} 49... Ke7 {[%clk 0:10:59]} 50. Nd4 {[%clk 0:02:21]} 50... Nxb2 {[%clk 0:10:52]} 51. Nxf5+ {[%clk 0:02:15]} 51... Kxd7 {[%clk 0:10:48]} 52. Ne3 {[%clk 0:02:11]} 52... Ke6 {[%clk 0:10:33]} 53. Nxg4 {[%clk 0:02:06]} 53... Nc4 {[%clk 0:10:25]} 54. Ne3 {[%clk 0:02:05]} 54... Nxa3 {[%clk 0:10:21]} 55. f4 {[%clk 0:01:43]} 55... Nb1 {[%clk 0:10:12]} 56. Nc2 {[%clk 0:01:26]} 56... Kd5 {[%clk 0:09:56]} 57. Kf2 {[%clk 0:01:25]} 57... Ke4 {[%clk 0:09:45]} 58. Nb4 {[%clk 0:00:59]} 58... Nxc3 {[%clk 0:09:32]} 59. Ke1 {[%clk 0:00:47]} 59... Ke3 {[%clk 0:09:17]} 60. f5 {[%clk 0:00:30]} 60... Ne4 {[%clk 0:09:06]} 61. f6 {[%clk 0:00:29]} 61... Nc3 {[%clk 0:08:43]} 62. f7 {[%clk 0:00:16]} 62... Kd4 {[%clk 0:08:37]} 63. f8=Q {[%clk 0:00:15]} 63... Nb5 {[%clk 0:08:33]} 64. Qf4+ {[%clk 0:00:12]} 64... Kc3 {[%clk 0:08:25]} 65. Nc6 {[%clk 0:00:11]} 65... Nd4 {[%clk 0:08:15]} 66. Qxd4+ {[%clk 0:00:10]} 66... Kb3 {[%clk 0:08:14]} 67. Qxa4+ {[%clk 0:00:06]} 67... Kb2 {[%clk 0:08:08]} 68. Nd4 {[%clk 0:00:05]} 68... Kc3 {[%clk 0:08:04]} 69. Qb3+ {[%clk 0:00:02]} 69... Kxd4 {[%clk 0:08:03]} 70. Qc2 {[%clk 0:00:01]} 70... Kd5 {[%clk 0:07:56]} 1/2-1/2
 """  # noqa
 
 SAMPLE_PGN_2 = """
@@ -160,14 +168,16 @@ class FakeMessage:
 
 def test_process_message_with_id():
     message = FakeMessage("@Chess2GIF id:11219006649")
-    _id, search_type = process_message(message)
+    args = process_message(message)
+    _id, search_type = args["id_or_username"], args["search_type"]
     assert _id == "11219006649"
     assert search_type == "id"
 
 
 def test_process_message_with_player_name():
     message = FakeMessage("@Chess2GIF player:hikaru")
-    player, search_type = process_message(message)
+    args = process_message(message)
+    player, search_type = args["id_or_username"], args["search_type"]
     assert player == "hikaru"
     assert search_type == "player"
 

@@ -32,11 +32,11 @@ class Chess2GIF(commands.Cog):
                 await self.handle_message_not_valid_error(message, error)
             return
 
-        id_or_username, search_type = process_message(message)
+        args = process_message(message)
         file_name = str(uuid.uuid4())
 
         with tmp_file_path(f"{file_name}.gif") as output_path:
-            game_pgn, error = create_gif(id_or_username, search_type, output_path)
+            game_pgn, error = create_gif(args, output_path)
 
             if error is not None or game_pgn is None:
                 await self.handle_subprocess_error(message, error)
@@ -98,10 +98,11 @@ def is_valid_message(
     return True, None
 
 
-def process_message(message: discord.Message) -> tuple[str, str]:
+def process_message(message: discord.Message) -> dict[str, str]:
     """Handle messages sent to bot"""
     logging.info("Processing message: %s", message)
     content = message.clean_content.strip().split(" ")[1:]
+    args = {}
 
     for arg in content:
         splitted = arg.split(":")
@@ -109,28 +110,42 @@ def process_message(message: discord.Message) -> tuple[str, str]:
         value = splitted[1]
 
         if key == "id" or key == "player":
-            search_type = key
-            id_or_username = value
+            args["search_type"] = key
+            args["id_or_username"] = value
 
-    return id_or_username, search_type
+        if key == "time":
+            args["time"] = value
+
+    return args
 
 
-def create_gif(
-    id_or_username: str, search_type: str, output: Path = Path("chess.gif")
-) -> tuple[Optional[str], Optional[str]]:
+def create_gif(args: dict[str, str], output: Path = Path("chess.gif")) -> tuple[Optional[str], Optional[str]]:
     """Create a chess GIF for the given game ID or player username using c2g"""
+    id_or_username, search_type = args["id_or_username"], args["search_type"]
     game_pgn, error = get_game_pgn(id_or_username, search_type)
     if error is not None or game_pgn is None:
         return None, error
 
     game = extract_game_headers(game_pgn, ["Black"])
+
+    delay = None
+    if "time" in args.keys():
+        time = args["time"]
+        if time != "real":
+            delay = "--delay=" + str(time)
+        else:
+            delay = "--delay=real"
+
     logging.info("Saving game to: %s", output)
+    c2g_args = ["c2g", game_pgn, "-o", str(output)]
+    if delay is not None:
+        c2g_args.append(delay)
+
     if game.get("Black", "") == id_or_username:
         # Flip the board if the username is playing as black
-        proc = subprocess.run(["c2g", game_pgn, "-o", str(output), "--flip"], capture_output=True)
-    else:
-        proc = subprocess.run(["c2g", game_pgn, "-o", str(output)], capture_output=True)
+        c2g_args.append("--flip")
 
+    proc = subprocess.run(c2g_args, capture_output=True)
     error = proc.stderr.decode("utf-8")
     if error != "":
         return None, error
