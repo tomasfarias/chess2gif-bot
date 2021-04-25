@@ -71,9 +71,15 @@ def is_valid_message(
 ) -> tuple[Optional[bool], Optional[str]]:
     """Check if the message is valid to be processed by the bot"""
     if message.author == bot_user:
+        # Ignore messages by a bot
         return False, None
 
     if not bot_user.mentioned_in(message):
+        # Ignore messages that do not mention the bot
+        return False, None
+
+    if message.mention_everyone is True:
+        # Ignore messages that mention everyone
         return False, None
 
     content = message.clean_content.strip().split(" ")
