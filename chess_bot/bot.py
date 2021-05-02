@@ -116,6 +116,9 @@ def process_message(message: discord.Message) -> dict[str, str]:
         if key == "time":
             args["time"] = value
 
+        if key == "disable":
+            args["disable"] = value.split(",")
+
     return args
 
 
@@ -128,23 +131,12 @@ def create_gif(args: dict[str, str], output: Path = Path("chess.gif")) -> tuple[
 
     game = extract_game_headers(game_pgn, ["Black"])
 
-    delay = None
-    if "time" in args.keys():
-        time = args["time"]
-        if time != "real":
-            delay = "--delay=" + str(time)
-        else:
-            delay = "--delay=real"
-
-    logging.info("Saving game to: %s", output)
-    c2g_args = ["c2g", game_pgn, "-o", str(output)]
-    if delay is not None:
-        c2g_args.append(delay)
-
+    c2g_args = concat_c2g_args(game_pgn, output, args)
     if game.get("Black", "") == id_or_username:
         # Flip the board if the username is playing as black
         c2g_args.append("--flip")
 
+    logging.info("Saving game to: %s", output)
     proc = subprocess.run(c2g_args, capture_output=True)
     error = proc.stderr.decode("utf-8")
     if error != "":
@@ -166,6 +158,25 @@ def get_game_pgn(id_or_username: str, search_type: str) -> tuple[Optional[str], 
         return None, error
 
     return proc.stdout.decode("utf-8"), None
+
+
+def concat_c2g_args(game_pgn: str, output: Path, args: dict[str, str]) -> list[str]:
+    c2g_args = ["c2g", game_pgn, "-o", str(output)]
+
+    delay = None
+    if "time" in args.keys():
+        time = args["time"]
+        if time != "real":
+            delay = "--delay=" + str(time)
+        else:
+            delay = "--delay=real"
+        c2g_args.append(delay)
+
+    if "disable" in args.keys():
+        for feat in args["disable"]:
+            c2g_args.append("--no-" + feat)
+
+    return c2g_args
 
 
 def make_gif_embed(pgn: str, gif_file_path: Path) -> tuple[discord.Embed, discord.File]:

@@ -7,6 +7,7 @@ import pytest
 
 from chess_bot.bot import (
     process_message,
+    concat_c2g_args,
     create_gif,
     make_gif_embed,
     extract_game_headers,
@@ -122,6 +123,45 @@ def clean_str(s: str) -> str:
     return s.replace("\n", "").replace(" ", "").replace("'", "")
 
 
+def test_concat_c2g_args_all_args():
+    args = {
+        "time": "real",
+        "disable": "player-bars,feature".split(","),
+    }
+    c2g_args = concat_c2g_args(SAMPLE_PGN_1, Path("chess.gif"), args)
+    assert c2g_args == [
+        "c2g",
+        SAMPLE_PGN_1,
+        "-o",
+        "chess.gif",
+        "--delay=real",
+        "--no-player-bars",
+        "--no-feature",
+    ]
+
+
+def test_concat_c2g_args_time_arg():
+    args = {
+        "time": "2500",
+    }
+    c2g_args = concat_c2g_args(SAMPLE_PGN_1, Path("chess.gif"), args)
+    assert c2g_args == ["c2g", SAMPLE_PGN_1, "-o", "chess.gif", "--delay=2500"]
+
+
+def test_concat_c2g_args_disable_bars():
+    args = {
+        "disable": "player-bars".split(","),
+    }
+    c2g_args = concat_c2g_args(SAMPLE_PGN_1, Path("chess.gif"), args)
+    assert c2g_args == ["c2g", SAMPLE_PGN_1, "-o", "chess.gif", "--no-player-bars"]
+
+
+def test_concat_c2g_args():
+    args = {}
+    c2g_args = concat_c2g_args(SAMPLE_PGN_1, Path("chess.gif"), args)
+    assert c2g_args == ["c2g", SAMPLE_PGN_1, "-o", "chess.gif"]
+
+
 def test_extract_game_headers_with_pgn_1():
     headers = ["Termination", "Result", "Date", "White", "Black", "WhiteElo", "BlackElo"]
     game_dict = extract_game_headers(SAMPLE_PGN_1, headers)
@@ -180,6 +220,25 @@ def test_process_message_with_player_name():
     player, search_type = args["id_or_username"], args["search_type"]
     assert player == "hikaru"
     assert search_type == "player"
+
+
+def test_process_message_with_no_player_bars():
+    message = FakeMessage("@Chess2GIF id:11219006649 disable:player-bars")
+    args = process_message(message)
+    disable = args["disable"]
+    assert disable == ["player-bars"]
+
+
+def test_process_message_with_time():
+    message = FakeMessage("@Chess2GIF id:11219006649 time:real")
+    args = process_message(message)
+    time = args["time"]
+    assert time == "real"
+
+    message = FakeMessage("@Chess2GIF id:11219006649 time:2000")
+    args = process_message(message)
+    time = args["time"]
+    assert time == "2000"
 
 
 USER_DATA = {
