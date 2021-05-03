@@ -197,7 +197,7 @@ def make_gif_embed(pgn: str, gif_file_path: Path) -> tuple[discord.Embed, discor
         "Result",
         "Termination",
     ]
-    headers = ["White", "Black", "WhiteElo", "BlackElo"]
+    headers = ["White", "Black", "WhiteElo", "BlackElo", "Link"]
     game = extract_game_headers(pgn, headers + inline_headers)
     gif_file = discord.File(gif_file_path)
 
@@ -208,7 +208,13 @@ def make_gif_embed(pgn: str, gif_file_path: Path) -> tuple[discord.Embed, discor
         black_rating=game.get("BlackElo", "N/A"),
     )
     logging.info("Creating embed: %s", title)
-    embed = discord.Embed(title=title, color=discord.Color.green())
+
+    url = game.get("Link")
+    if url is not None:
+        embed = discord.Embed(title=title, color=discord.Color.green(), url=url)
+    else:
+        embed = discord.Embed(title=title, color=discord.Color.green())
+
     for header in inline_headers:
         value = game.get(header)
         logging.debug("Adding header: %s, %s", header, value)
