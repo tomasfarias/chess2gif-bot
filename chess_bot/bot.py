@@ -14,7 +14,7 @@ import uuid
 import discord
 from discord.ext import commands
 
-PGN_HEADER_PATTERN = r"((?<=\[{header}\s\")|(?<=\[{header}\s))([a-zA-Z\s0-9\-\/\.]+)"
+PGN_HEADER_PATTERN = r"(?<=\[{header}\s\")([a-zA-Z\s0-9\-\/\.\:]+)"
 
 
 class Chess2GIF(commands.Cog):

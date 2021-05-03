@@ -66,19 +66,19 @@ def test_create_gif_with_game_id(tmp_path):
 
 
 SAMPLE_PGN_1 = """
-[Event Live Chess]
-[Site Chess.com]
-[Date 2021.04.03]
-[White liczner]
-[Black Hikaru]
-[Result 1/2-1/2]
-[CurrentPosition rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1]
-[ECO B06]
-[WhiteElo 2836]
-[BlackElo 3205]
-[TimeControl 180]
-[EndTime 13:03:49 PDT]
-[Termination Game drawn by timeout vs insufficient material]
+[Event "Live Chess"]
+[Site "Chess.com"]
+[Date "2021.04.03"]
+[White "liczner"]
+[Black "Hikaru"]
+[Result "1/2-1/2"]
+[CurrentPosition "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"]
+[ECO "B06"]
+[WhiteElo "2836"]
+[BlackElo "3205"]
+[TimeControl "180"]
+[EndTime "13:03:49 PDT"]
+[Termination "Game drawn by timeout vs insufficient material"]
 
 1. e4 {[%clk 0:30:00]} 1... g6 {[%clk 0:30:00]} 2. d4 {[%clk 0:29:51]} 2... Bg7 {[%clk 0:29:59]} 3. Nf3 {[%clk 0:29:40]} 3... c6 {[%clk 0:29:58]} 4. Nc3 {[%clk 0:29:31]} 4... d5 {[%clk 0:29:53]} 5. h3 {[%clk 0:29:27]} 5... dxe4 {[%clk 0:29:43]} 6. Nxe4 {[%clk 0:29:26]} 6... Nf6 {[%clk 0:29:40]} 7. Nxf6+ {[%clk 0:29:21]} 7... exf6 {[%clk 0:29:39]} 8. Bc4 {[%clk 0:29:13]} 8... O-O {[%clk 0:29:38]} 9. O-O {[%clk 0:29:09]} 9... Nd7 {[%clk 0:29:33]} 10. c3 {[%clk 0:29:00]} 10... b5 {[%clk 0:29:26]} 11. Bb3 {[%clk 0:28:53]} 11... Nb6 {[%clk 0:29:25]} 12. Re1 {[%clk 0:28:41]} 12... a5 {[%clk 0:29:21]} 13. a3 {[%clk 0:28:28]} 13... a4 {[%clk 0:29:15]} 14. Ba2 {[%clk 0:28:22]} 14... Re8 {[%clk 0:29:12]} 15. Bf4 {[%clk 0:27:25]} 15... Be6 {[%clk 0:29:02]} 16. Bxe6 {[%clk 0:25:30]} 16... Rxe6 {[%clk 0:29:01]} 17. Rxe6 {[%clk 0:25:12]} 17... fxe6 {[%clk 0:29:00]} 18. Qe2 {[%clk 0:25:07]} 18... Qd5 {[%clk 0:28:45]} 19. Re1 {[%clk 0:24:59]} 19... Re8 {[%clk 0:28:28]} 20. Nd2 {[%clk 0:23:31]} 20... Qd7 {[%clk 0:27:31]} 21. Ne4 {[%clk 0:23:17]} 21... Nd5 {[%clk 0:26:41]} 22. Bg3 {[%clk 0:21:15]} 22... Bf8 {[%clk 0:26:27]} 23. Qf3 {[%clk 0:20:50]} 23... Kg7 {[%clk 0:25:47]} 24. h4 {[%clk 0:20:03]} 24... h6 {[%clk 0:24:59]} 25. Re2 {[%clk 0:19:09]} 25... Qf7 {[%clk 0:24:28]} 26. Bd6 {[%clk 0:18:34]} 26... Be7 {[%clk 0:23:18]} 27. Bxe7 {[%clk 0:18:13]} 27... Rxe7 {[%clk 0:23:12]} 28. g3 {[%clk 0:17:14]} 28... g5 {[%clk 0:22:49]} 29. hxg5 {[%clk 0:16:16]} 29... hxg5 {[%clk 0:22:48]} 30. Nc5 {[%clk 0:15:28]} 30... f5 {[%clk 0:21:52]} 31. Re5 {[%clk 0:13:53]} 31... g4 {[%clk 0:21:05]} 32. Qe2 {[%clk 0:13:43]} 32... Kf6 {[%clk 0:20:59]} 33. Kg2 {[%clk 0:12:16]} 33... Qg8 {[%clk 0:20:11]} 34. Qd2 {[%clk 0:11:42]} 34... Qh8 {[%clk 0:19:06]} 35. Qe2 {[%clk 0:11:03]} 35... Qh3+ {[%clk 0:17:33]} 36. Kg1 {[%clk 0:10:52]} 36... Rh7 {[%clk 0:17:30]} 37. Rxe6+ {[%clk 0:10:26]} 37... Kf7 {[%clk 0:17:16]} 38. Re7+ {[%clk 0:06:13]} 38... Kg6 {[%clk 0:14:39]} 39. Qe6+ {[%clk 0:05:00]} 39... Nf6 {[%clk 0:14:34]} 40. Rxh7 {[%clk 0:04:31]} 40... Qxh7 {[%clk 0:14:33]} 41. Nd3 {[%clk 0:04:19]} 41... Qg8 {[%clk 0:12:28]} 42. Ne5+ {[%clk 0:04:03]} 42... Kg5 {[%clk 0:12:11]} 43. Qxg8+ {[%clk 0:03:51]} 43... Nxg8 {[%clk 0:12:02]} 44. Nxc6 {[%clk 0:03:50]} 44... Nf6 {[%clk 0:11:44]} 45. Na7 {[%clk 0:03:44]} 45... Ne4 {[%clk 0:11:31]} 46. Nxb5 {[%clk 0:03:36]} 46... Nd2 {[%clk 0:11:28]} 47. d5 {[%clk 0:03:26]} 47... Kf6 {[%clk 0:11:21]} 48. d6 {[%clk 0:02:50]} 48... Nc4 {[%clk 0:11:00]} 49. d7 {[%clk 0:02:33]} 49... Ke7 {[%clk 0:10:59]} 50. Nd4 {[%clk 0:02:21]} 50... Nxb2 {[%clk 0:10:52]} 51. Nxf5+ {[%clk 0:02:15]} 51... Kxd7 {[%clk 0:10:48]} 52. Ne3 {[%clk 0:02:11]} 52... Ke6 {[%clk 0:10:33]} 53. Nxg4 {[%clk 0:02:06]} 53... Nc4 {[%clk 0:10:25]} 54. Ne3 {[%clk 0:02:05]} 54... Nxa3 {[%clk 0:10:21]} 55. f4 {[%clk 0:01:43]} 55... Nb1 {[%clk 0:10:12]} 56. Nc2 {[%clk 0:01:26]} 56... Kd5 {[%clk 0:09:56]} 57. Kf2 {[%clk 0:01:25]} 57... Ke4 {[%clk 0:09:45]} 58. Nb4 {[%clk 0:00:59]} 58... Nxc3 {[%clk 0:09:32]} 59. Ke1 {[%clk 0:00:47]} 59... Ke3 {[%clk 0:09:17]} 60. f5 {[%clk 0:00:30]} 60... Ne4 {[%clk 0:09:06]} 61. f6 {[%clk 0:00:29]} 61... Nc3 {[%clk 0:08:43]} 62. f7 {[%clk 0:00:16]} 62... Kd4 {[%clk 0:08:37]} 63. f8=Q {[%clk 0:00:15]} 63... Nb5 {[%clk 0:08:33]} 64. Qf4+ {[%clk 0:00:12]} 64... Kc3 {[%clk 0:08:25]} 65. Nc6 {[%clk 0:00:11]} 65... Nd4 {[%clk 0:08:15]} 66. Qxd4+ {[%clk 0:00:10]} 66... Kb3 {[%clk 0:08:14]} 67. Qxa4+ {[%clk 0:00:06]} 67... Kb2 {[%clk 0:08:08]} 68. Nd4 {[%clk 0:00:05]} 68... Kc3 {[%clk 0:08:04]} 69. Qb3+ {[%clk 0:00:02]} 69... Kxd4 {[%clk 0:08:03]} 70. Qc2 {[%clk 0:00:01]} 70... Kd5 {[%clk 0:07:56]} 1/2-1/2
 """  # noqa
@@ -177,7 +177,7 @@ def test_extract_game_headers_with_pgn_1():
 
 
 def test_extract_game_headers_with_pgn_2():
-    headers = ["Termination", "Result", "Date", "White", "Black", "WhiteElo", "BlackElo"]
+    headers = ["Termination", "Result", "Date", "White", "Black", "WhiteElo", "BlackElo", "Link"]
     game_dict = extract_game_headers(SAMPLE_PGN_2, headers)
 
     assert [k for k in game_dict.keys()] == headers
@@ -185,6 +185,7 @@ def test_extract_game_headers_with_pgn_2():
     assert game_dict["Black"] == "pepegasacrifice"
     assert game_dict["Date"] == "2021.03.11"
     assert game_dict["Termination"] == "pepegasacrifice won on time"
+    assert game_dict["Link"] == "https://www.chess.com/game/live/9190563687"
 
 
 def test_make_gif_embed(tmp_path):
