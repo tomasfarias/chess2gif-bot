@@ -209,11 +209,11 @@ def make_gif_embed(pgn: str, gif_file_path: Path) -> tuple[discord.Embed, discor
     )
     logging.info("Creating embed: %s", title)
 
+    embed = discord.Embed(title=title, color=discord.Color.green())
+
     url = game.get("Link")
     if url is not None:
-        embed = discord.Embed(title=title, color=discord.Color.green(), url=url)
-    else:
-        embed = discord.Embed(title=title, color=discord.Color.green())
+        embed.add_field(name="Game URL", value=url, inline=False)
 
     for header in inline_headers:
         value = game.get(header)
