@@ -119,6 +119,9 @@ def process_message(message: discord.Message) -> dict[str, str]:
         if key == "disable":
             args["disable"] = value.split(",")
 
+        if key == "dark" or key == "light":
+            args[key] = value
+
     return args
 
 
@@ -175,6 +178,13 @@ def concat_c2g_args(game_pgn: str, output: Path, args: dict[str, str]) -> list[s
     if "disable" in args.keys():
         for feat in args["disable"]:
             c2g_args.append("--no-" + feat)
+
+    if "light" in args.keys() or "dark" in args.keys():
+        for color in ("dark", "light"):
+            rgb = args.get(color)
+            if rgb is None:
+                continue
+            c2g_args.append(f'--{color}="' + rgb + ',1"')
 
     return c2g_args
 

@@ -127,6 +127,8 @@ def test_concat_c2g_args_all_args():
     args = {
         "time": "real",
         "disable": "player-bars,feature".split(","),
+        "light": "255,255,255",
+        "dark": "0,0,0",
     }
     c2g_args = concat_c2g_args(SAMPLE_PGN_1, Path("chess.gif"), args)
     assert c2g_args == [
@@ -137,23 +139,24 @@ def test_concat_c2g_args_all_args():
         "--delay=real",
         "--no-player-bars",
         "--no-feature",
+        '--dark="0,0,0,1"',
+        '--light="255,255,255,1"',
     ]
 
 
 def test_concat_c2g_args_time_arg():
-    args = {
-        "time": "2500",
-    }
+    args = {"time": "2500", "light": "255,255,255"}
     c2g_args = concat_c2g_args(SAMPLE_PGN_1, Path("chess.gif"), args)
-    assert c2g_args == ["c2g", SAMPLE_PGN_1, "-o", "chess.gif", "--delay=2500"]
+    assert c2g_args == ["c2g", SAMPLE_PGN_1, "-o", "chess.gif", "--delay=2500", '--light="255,255,255,1"']
 
 
 def test_concat_c2g_args_disable_bars():
     args = {
+        "dark": "0,0,0",
         "disable": "player-bars".split(","),
     }
     c2g_args = concat_c2g_args(SAMPLE_PGN_1, Path("chess.gif"), args)
-    assert c2g_args == ["c2g", SAMPLE_PGN_1, "-o", "chess.gif", "--no-player-bars"]
+    assert c2g_args == ["c2g", SAMPLE_PGN_1, "-o", "chess.gif", "--no-player-bars", '--dark="0,0,0,1"']
 
 
 def test_concat_c2g_args():
