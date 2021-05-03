@@ -140,6 +140,7 @@ def create_gif(args: dict[str, str], output: Path = Path("chess.gif")) -> tuple[
         c2g_args.append("--flip")
 
     logging.info("Saving game to: %s", output)
+    logging.debug("Args: %s", c2g_args)
     proc = subprocess.run(c2g_args, capture_output=True)
     error = proc.stderr.decode("utf-8")
     if error != "":
@@ -184,7 +185,7 @@ def concat_c2g_args(game_pgn: str, output: Path, args: dict[str, str]) -> list[s
             rgb = args.get(color)
             if rgb is None:
                 continue
-            c2g_args.append(f'--{color}="' + rgb + ',1"')
+            c2g_args.append(f"--{color}=" + rgb + ",1")
 
     return c2g_args
 
