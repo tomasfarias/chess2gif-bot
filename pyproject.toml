@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "chess_bot"
-version = "0.4.4"
+version = "0.4.5"
 description = "Discord bot that GIFs your chess games from lichess.org and chess.com!"
 authors = ["Tomás Farías <tomas@tomasfarias.dev>"]
 packages = [
